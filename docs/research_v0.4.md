@@ -189,9 +189,9 @@ LSP 在工程实践中被广泛利用，例如 neovim、rls（Rust language serv
 
 如果update操作无法满足条件，则可以考虑同步副本数据，同时附带额外元信息，通过元信息让update和merge操作具备以上三律，这种形式称为**state-based CRDT**。让元信息满足条件的方式是让其更新保持“单调”，这个关系一般被称为“偏序关系”。举一个简单例子，每次update操作都带上时间戳，在merge时对本地副本时间戳及同步副本时间戳进行比对，取更新的结果，这样总能保证结果最新并且最终一致，这种方式称为Last Write Wins。
 
-![1584752530408](pics\1584752530408.png)
+![1584752530408](pics/1584752530408.png)
 
-![1584752493000](C:\Users\doujihu\AppData\Roaming\Typora\typora-user-images\1584752493000.png)
+![1584752493000](pics/1584752493000.png)
 
 #### <span id="head23"> 参考18年项目的CRDT的不足</span>
 
@@ -223,11 +223,11 @@ CRDT通过数据结构的序关系而非操作变换来处理并发请求，避�
 
 于是[5]提出将OT和CRDT两种方法结合，从而实现基于字符串的操作和撤销。他的设计如下：每个客户端有一个view，一个model，一个日志和3个队列，其中view就是当前的字符串，一个用户可以在该字符串的任意位置插入或删除一个子串，以及撤销日志中的任意一个本地或远程的历史操作。本地的操作和来自其他用户的操作首先保存在队列Qv和Qin中，再通过model进行整合，整合后的本地操作首先存在队列Qout中，之后广播给其他客户端。当model渲染完毕，本地和远程操作的整合将会展示在view中，同时保存在日志里。
 
-![1584716595276](pics\1584716595276.png)
+![1584716595276](pics/1584716595276.png)
 
 所谓的model实际上是双向链表和邻接表。双向链表用来保存每一次操作的子串以及额外的标识信息，它们以一定的顺序相连。每一种操作占一张邻接表，用来保存每次这种操作所涉及的所有结点。下图便是一个例子，用黑色实线表示实际字符串的相邻，虚线表示同一次插入操作插入的结点，灰色实线表示同一次删除操作删除的结点，结点下面的黑点是结点被删除的标记，而灰点表示此次删除被撤销了，当遇到插入或删除操作时，先分裂结点，再修改标记和邻接表。注意到，撤销D1操作不会将B还原，因为B被并发地删除了两次(D1,D2)。
 
-![1584716630887](C:\Users\doujihu\AppData\Roaming\Typora\typora-user-images\1584716630887.png)
+![1584716630887](pics/1584716630887.png)
 
 ## <span id="head28"> 重要性与前瞻性分析</span>
 
@@ -262,7 +262,7 @@ Visual Studio Live Share 使用了微软官方在 Azure 上架设的服务器，
 另一方面，Visual Studio Live Share 使用了微软自行制作 License，并不允许第三方对插件进行随意的扩展。
 因此我们无法在之上做进一步的开发。
 
-![https://code.visualstudio.com/assets/blogs/2017/11/15/vs-code-ls-session.png](pics\vs-code-ls-session.png)
+![https://code.visualstudio.com/assets/blogs/2017/11/15/vs-code-ls-session.png](pics/vs-code-ls-session.png)
 
 ### <span id="head31"> Atom-Teletype</span>
 
@@ -278,7 +278,7 @@ Teletype软件包由三个组件组成：
 
 Atom-Teletype的缺点：Atom启动过慢，而且容易崩溃。Teletype需要安装其他依赖，对于普通用户不友好。
 
-![1584800129396](pics\1584800129396.png)
+![1584800129396](pics/1584800129396.png)
 
 ## <span id="head32"> 参考文献</span>
 
