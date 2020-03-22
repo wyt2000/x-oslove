@@ -1,6 +1,6 @@
 # <span id="head1"> 调研报告</span>
 
-**OSLOVE**
+
 
 -  [调研报告](#head1)
   - [ 目录](#head2)
@@ -24,7 +24,7 @@
     - [ Language-Server-Protocol](#head20)
     - [ CRDT](#head21)
       - [ CRDT简介](#head22)
-      - [ 参考18年项目的CRDT的不足](#head23)
+      - [ 参考18年项目中CRDT的不足](#head23)
     - [String-wise CRDT and Selective Undo](#head24)
       - [OT(Operational Transformation)](#head25)
       - [CRDT(Conflict-Free Replicated Data Types)](#head26)
@@ -36,7 +36,7 @@
   - [ 参考文献](#head32)
 
 ## <span id="head3"> 小组成员</span>
-
+**OSLOVE**
 - 吴钰同（PB18111684）
 - 黄炜喆（PB18111765）
 - 李钰铭（PB18111771）
@@ -193,7 +193,7 @@ LSP 在工程实践中被广泛利用，例如 neovim、rls（Rust language serv
 
 ![1584752493000](pics/1584752493000.png)
 
-#### <span id="head23"> 参考18年项目的CRDT的不足</span>
+#### <span id="head23"> 参考18年项目中CRDT的不足</span>
 
 1.仅实现了对单个字符的操作，效率很低，而且当面对大量用户编辑或者文档量很大时每个字符的标识符可能会非常长，这样会对内存和运行效率带来很大的影响。
 
@@ -245,7 +245,7 @@ LSP是一种用于IDE与语言服务器之间的一种协议，支持语言插�
 
 ## <span id="head29"> 相关工作</span>
 
-### <span id="head30">Visual Studio-Live Share</span>
+### <span id="head30">Visual Studio Live Share</span>
 
 Visual Studio Live Share 是由微软的团队为 Visual Studio Code 这一编辑器开发的文本协作编辑扩展。
 利用此扩展，多人可以共同编辑同一文档，而无需克隆 repo 或者安装代码所需的任何依赖。
@@ -264,7 +264,7 @@ Visual Studio Live Share 使用了微软官方在 Azure 上架设的服务器，
 
 ![https://code.visualstudio.com/assets/blogs/2017/11/15/vs-code-ls-session.png](pics/vs-code-ls-session.png)
 
-### <span id="head31"> Atom-Teletype</span>
+### <span id="head31"> Atom Teletype</span>
 
 Atom是github专门为程序员推出的一个跨平台文本编辑器。具有简洁和直观的图形用户界面，并有很多有趣的特点：支持JavaScript等网页编程语言。它支持宏，自动完成分屏功能，集成了文件管理器。
 
