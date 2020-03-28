@@ -174,16 +174,16 @@ nodejs的功能十分强大，用nodejs搭建服务器非常方便，我们可�
 
 例如使用http模块搭建web服务器框架只用以下代码即可
 
-![4](C:/Users/lenovo/Documents/Tencent Files/823956290/FileRecv/hwz(1)/hwz/4.png)
+![4](pics/4.png)
 
 使用net模块搭建服务器框架
 
-![5](C:/Users/lenovo/Documents/Tencent Files/823956290/FileRecv/hwz(1)/hwz/5.png)
+![5](pics/5.png)
 
 
 * socket.io实现服务器与客户端的通信
 
-![6](C:/Users/lenovo/Documents/Tencent Files/823956290/FileRecv/hwz(1)/hwz/6.png)
+![6](pics/6.png)
 
 Socket.io将Websocket和轮询（Polling）机制以及其它的实时通信方式封装成了通用的接口，并且在服务端实现了这些实时机制的相应代码。socket.io的最大特点就是封装websocket等协议实现了tcp客户端和服务器的全双工通信。
 
@@ -193,7 +193,7 @@ Socket.io将Websocket和轮询（Polling）机制以及其它的实时通信方�
 
 基于socket.io在客户端中用简单的几条命令就能实现与服务器的事件的发送与监听
 
-![7](C:/Users/lenovo/Documents/Tencent Files/823956290/FileRecv/hwz(1)/hwz/7.png)
+![7](pics/7.png)
 
 常用API解析，客户端和服务端的程序都通用：
 
@@ -222,11 +222,11 @@ LaTeX Workshop是Visual Studio Code的扩展，旨在为使用Visual Studio Code
 
 - 即时查看PDF（在VS Code或浏览器中）
 
-  ![preview](pics\preview.gif)
+  ![preview](pics/preview.gif)
 
 - 正向和反向同步。 单击以在.tex源与PDF中的位置之间跳转
 
-  ![synctex](pics\synctex.gif)
+  ![synctex](pics/synctex.gif)
 
 - 自动补全
 
