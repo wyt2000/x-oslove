@@ -332,10 +332,10 @@ var socket = io.connect('http://localhost:5000', {reconnect: true});
 
 // Add a connect listener
 socket.on('connect',(socket)=>{
-console.log('Connected!');
+    console.log('Connected!');
 });
 socket.on('message',(msg)=>{
-console.log(msg);
+    console.log(msg);
 });
 socket.emit('message','This is the message from client.js to server.py');
 ```
@@ -350,10 +350,10 @@ socketio = SocketIO(app)
 
 @socketio.on('message')
 def handle_message(message):
-print('received message: ' + message)
-send('This is the message from server.py to client.js')
+    print('received message: ' + message)
+    send('This is the message from server.py to client.js')
 if __name__ == '__main__':
-socketio.run(app)
+    socketio.run(app)
 ```
 
 客户端收到服务器的信息后，向服务器发送信息。
