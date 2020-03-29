@@ -1,9 +1,5 @@
 # <span id="head1"> 可行性报告</span>
 
-**OSLOVE**
-
-[ 可行性报告](#head1)
-
 - [ 项目介绍](#head2)
 - [ 理论依据](#head3)
   - [ CRDT](#head4)
