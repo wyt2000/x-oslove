@@ -1,50 +1,24 @@
-# <span id="head1"> 可行性报告</span>
+# 可行性报告
 
-- [ 项目介绍](#head2)
-- [ 理论依据](#head3)
-  - [ CRDT](#head4)
-    - [ 概览](#head5)
-    - [ 数据结构](#head6)
-    - [ 操作和广播](#head7)
-    - [ 整合](#head8)
-      - [ 本地操作](#head9)
-      - [ 远程操作](#head10)
-    - [ 渲染](#head11)
-  - [ Language-Server-Protocol](#head12)
-    - [ 基本协议](#head13)
-    - [ 标题部分](#head14)
-    - [ 内容部分](#head15)
-    - [ 请求信息](#head16)
-    - [ 回应信息](#head17)
-- [ 技术依据](#head18)
-  - [ vscode插件开发](#head19)
-  - [ flask搭建服务器](#head20)
-  - [ socket.io实现服务器与客户端的通信](#head21)
-    - [ 客户端](#head22)
-    - [ 服务器](#head23)
-  - [ latex实时预览](#head24)
-    - [ 实现思路](#head25)
-    - [LaTeX Workshop](#head26)
-      - [ 简介](#head27)
-      - [ 功能](#head28)
-- [ 技术路线](#head29)
-- [ 参考文献](#head30)
+**OSLOVE**
 
-## <span id="head2"> 项目介绍</span>
+[TOC]
+
+## 项目介绍
 
 使用TypeScript实现基于CRDT的LaTeX实时协作编辑系统，编写成符合LSP协议的插件，并使之能在vscode等IDE上使用。
 
-## <span id="head3"> 理论依据</span>
+## 理论依据
 
-### <span id="head4"> CRDT</span>
+### CRDT
 
-#### <span id="head5"> 概览</span>
+#### 概览
 
 每个客户端有一个view，一个model，一个日志和3个队列，其中view就是当前的字符串，一个用户可以在该字符串的任意位置插入或删除一个子串，以及撤销日志中的任意一个本地或远程的历史操作。本地的操作和来自其他用户的操作首先保存在队列Q_v和Q_in中，再通过model进行整合，整合后的本地操作首先存在队列Q_out中，之后广播给其他客户端。当model渲染完毕，本地和远程操作的整合将会展示在view中，同时保存在日志里。
 
 ![1584716595276](pics/1584716595276.png)
 
-#### <span id="head6"> 数据结构</span>
+#### 数据结构
 
 **基本概念：**
 
@@ -100,7 +74,7 @@ model链表的结点，同属于一次插入操作生成的结点叫做同类结
 
 保存了可以被撤销的操作元素，对于插入操作可以只保存链表的最左侧结点。
 
-#### <span id="head7"> 操作和广播</span>
+#### 操作和广播
 
 用户对view的字符串进行的原始操作可以概括为以下三类：
 
@@ -121,9 +95,9 @@ model链表的结点，同属于一次插入操作生成的结点叫做同类结
 
 注意，撤销操作必须有最高的优先级，撤销操作发出后，应该立刻进入队列并整合到model中，同时向其他用户广播这一撤销。
 
-#### <span id="head8"> 整合</span>
+#### 整合
 
-##### <span id="head9"> 本地操作</span>
+##### 本地操作
 
 ins：如果插入位置在一个可见结点的中间，则先将这个结点分裂成两个结点，再把新的结点插入到它们之间；如果插入位置在两个可见结点之间，要把它插入到这两个可见结点之间的所有不可见结点左边。对于分裂的结点，要保证属性和原来的一致。
 
@@ -133,7 +107,7 @@ undo：把相应的元素的undo设为该undo操作，修改undo链表。
 
 这些操作进行完后都要根据可见判据修改结点的visible状态以及render区间。
 
-##### <span id="head10"> 远程操作</span>
+##### 远程操作
 
 一个远程操作在被整合到model之前，必须确保与它相关的结点和元素都是在本地可访问的，否则这个操作只能停留在Qin队列里。
 
@@ -147,13 +121,13 @@ undo：把相应的元素的undo设为该undo操作，修改undo链表。
 
 远程删除和撤销只需要把广播的信息翻译成本地的删除和撤销操作即可。对于删除操作，利用广播来的offset很容易找到要删除的结点；对于撤销操作，如果该撤销的结点已经被撤销了，只需要把此撤销元素加入该结点的撤销链表即可。还要注意并发的删除操作有累积效应，而并发的撤销操作只进行一次。
 
-#### <span id="head11"> 渲染</span>
+#### 渲染
 
 维护一个结点的下标区间(render_l,render_r)表示当前需要渲染的区域，当所有操作整合完毕时，用一个curr指针遍历(render_l,render_r)内的所有结点。由数据结构中的定义，仅当v.visible!=v.strInView时，该结点需要渲染。
 
 ![image-20200328090344530](pics/image-20200328090344530.png)
 
-### <span id="head12"> Language-Server-Protocol</span>
+### Language-Server-Protocol
 
 通信路径：vscode插件通过JSON与LSP通信，LSP通过JSON与server通信。
 
@@ -161,11 +135,11 @@ LSP协议定义了一组JSON-RPC请求，响应和通知消息，这些消息使
 
 通常，语言服务器协议支持JSON-RPC消息，但是此处定义的基本协议使用约定，以便传递给请求/通知消息的参数应该是对象类型（如果完全传递的话）。 但是，这不允许在自定义消息中使用数组参数类型。
 
-#### <span id="head13"> 基本协议</span>
+#### 基本协议
 
 基本协议由标题和内容部分（与HTTP相比）组成。 标题和内容部分以“ \ r \ n”分隔。
 
-#### <span id="head14"> 标题部分</span>
+#### 标题部分
 
 标题部分由标题字段组成。 每个标题字段均包含一个名称和一个值，并以“：”（冒号和空格）分隔。 每个标题字段均以“ \ r \ n”结尾。 考虑到最后一个标头字段和整个标题本身都以'\ r \ n'结尾，并且至少有一个标题是强制性的，这意味着两个'\ r \ n'序列始终紧接在消息的内容部分之前 。
 
@@ -178,7 +152,7 @@ LSP协议定义了一组JSON-RPC请求，响应和通知消息，这些消息使
 
 标题部分使用“ ascii”编码进行编码。 其中包括分隔标题和内容部分的“ \ r \ n”。
 
-#### <span id="head15"> 内容部分</span>
+#### 内容部分
 
 包含消息的实际内容。 消息的内容部分使用JSON-RPC来描述请求、响应和通知。 使用Content-Type字段中提供的字符集对内容部分进行编码。 它默认为utf-8，这是目前唯一支持的编码。 如果服务器或客户端收到的标题与utf-8编码不同，则应以错误响应。
 
@@ -197,7 +171,7 @@ Content-Length: ...\r\n
 }
 ```
 
-#### <span id="head16"> 请求信息</span>
+#### 请求信息
 
 以下的JSON用来描述客户端和服务器之间请求。每个已处理的请求都必须将响应发送回请求的发送者。
 
@@ -221,7 +195,7 @@ interface RequestMessage extends Message {
 }
 ```
 
-#### <span id="head17"> 回应信息</span>
+#### 回应信息
 
 作为请求结果发送的响应消息。 如果请求未提供结果值，则请求的接收者仍然需要返回响应消息以符合JSON RPC规范。 在这种情况下，应将ResponseMessage的result属性设置为null，以发出成功的请求信号。
 
@@ -247,9 +221,9 @@ interface ResponseMessage extends Message {
 
 剩余内容详见本仓库内的LSP技术文档。
 
-## <span id="head18"> 技术依据</span>
+## 技术依据
 
-### <span id="head19"> vscode插件开发</span>
+### vscode插件开发
 
 参考vscode官方文档Your First Extension(Example - Hello World)，我们开发自己的插件的步骤非常简单，首先打开cmd输入以下命令
 
@@ -283,7 +257,7 @@ vsce publish // 发布到 MarketPlace
 
 就可以在vscode extention商店中找到我们自己编写的插件
 
-### <span id="head20"> flask搭建服务器</span>
+### flask搭建服务器
 
 经过讨论，我们改为使用flask搭建服务器，代码位于https://github.com/OSH-2020/colive-server
 
@@ -298,9 +272,9 @@ python 的好处在于成熟，flask  老框架了，而且简单而容易开发
 要考虑要不要 ts（没有类型检查容易出错），顺带配置 tsconfig，
 且一套下来后用 babel 编译 tsc 速度慢，本地 node 版本还要考虑兼容性问题。
 
-### <span id="head21"> socket.io实现服务器与客户端的通信</span>
+### socket.io实现服务器与客户端的通信
 
-#### <span id="head22"> 客户端</span>
+#### 客户端
 
 Socket.io将Websocket和轮询（Polling）机制以及其它的实时通信方式封装成了通用的接口，并且在服务端实现了这些实时机制的相应代码。socket.io的最大特点就是封装websocket等协议实现了tcp客户端和服务器的全双工通信。
 
@@ -316,12 +290,12 @@ Socket.io将Websocket和轮询（Polling）机制以及其它的实时通信方�
 
 1. socket.Server.on('connecntion',func(socket))：监听来自客户端的连接事件并创建socket.Socket对象到回调函数
 2. socket.Socket.on('< event >',func(para))：监听来自建立了socket连接的特定socket发出的事件并处理其消息
-socket.Socket.emit('< event >',msg)：发出某事件的消息给socket连接的另一头
+   socket.Socket.emit('< event >',msg)：发出某事件的消息给socket连接的另一头
 3. socket.io(url)：创建一个socket客户端，并连接远程服务端，返回一个socket.Socket对象
 4. socket.Server.emit('< event >',msg)：广播消息给所有跟服务端连接的客户端
 5. socket.Socket.broadcast.emit('< event >',msg)：某客户端与服务端的socket连接给其它所有的socket广播消息
 
-#### <span id="head23"> 服务器</span>
+#### 服务器
 
 flask也支持socket.io，以下是一个js客户端和python服务器通信的示例：
 
@@ -332,16 +306,16 @@ var socket = io.connect('http://localhost:5000', {reconnect: true});
 
 // Add a connect listener
 socket.on('connect',(socket)=>{
-console.log('Connected!');
+    console.log('Connected!');
 });
 socket.on('message',(msg)=>{
-console.log(msg);
+    console.log(msg);
 });
 socket.emit('message','This is the message from client.js to server.py');
 ```
 
 ```python
-#server.py
+#server.js
 from flask import Flask, render_template
 from flask_socketio import SocketIO,send
 app = Flask(__name__)
@@ -350,10 +324,10 @@ socketio = SocketIO(app)
 
 @socketio.on('message')
 def handle_message(message):
-print('received message: ' + message)
-send('This is the message from server.py to client.js')
+    print('received message: ' + message)
+    send('This is the message from server.py to client.js')
 if __name__ == '__main__':
-socketio.run(app)
+    socketio.run(app)
 ```
 
 客户端收到服务器的信息后，向服务器发送信息。
@@ -364,33 +338,33 @@ socketio.run(app)
 
 ![image-20200329194612285](pics/image-20200329194612285.png)
 
-### <span id="head24"> latex实时预览</span>
+### latex实时预览
 
-#### <span id="head25"> 实现思路</span>
+#### 实现思路
 
 本项目将参考Visual Studio Code编辑器上的LaTeX Workshop插件，以及Sublime编辑器上的LaTeXing插件。
 
-#### <span id="head26">LaTeX Workshop</span>
+#### LaTeX Workshop
 
-##### <span id="head27"> 简介</span>
+##### 简介
 
 LaTeX Workshop是Visual Studio Code的扩展，旨在为使用Visual Studio Code进行LaTeX排版提供核心功能。 它还具有一个同级扩展LaTeX Utilities，提供了额外的功能。其通过预览，编译，自动完成，着色等功能提高LaTeX排版效率。
 
-##### <span id="head28"> 功能</span>
+##### 功能
 
 - 在保存时自动将LaTex(包括Bibex)转化为PDF
 
 - 即时查看PDF（在VS Code或浏览器中）
 
-![preview](pics/preview.gif)
+  ![preview](pics/preview.gif)
 
 - 正向和反向同步。 单击以在.tex源与PDF中的位置之间跳转
 
-![synctex](pics/synctex.gif)
+  ![synctex](pics/synctex.gif)
 
 - 自动补全
 
-![](pics/subparagraph.gif)
+  ![](pics/subparagraph.gif)
 
 - LaTeX日志解析器，在LaTeX构建中的错误和警告，会在VS Code中自动报告
 
@@ -404,7 +378,7 @@ LaTeX Workshop是Visual Studio Code的扩展，旨在为使用Visual Studio Code
 
 授权条款类型：The MIT License
 
-## <span id="head29"> 技术路线</span>
+## 技术路线
 
 本项目实现分为三部分：
 
@@ -412,7 +386,7 @@ LaTeX Workshop是Visual Studio Code的扩展，旨在为使用Visual Studio Code
 - 搭建服务器并实现与多个客户端之间的通信，从而完成多人协作编辑的演示，由明宇龙负责。
 - 处理vscode插件和lsp之间的通信，以及lsp与服务器之间的通信，由李钰铭和黄炜喆负责。
 
-## <span id="head30"> 参考文献</span>
+## 参考文献
 
 [1]Yu, W. (2014). Supporting String-Wise Operations and Selective Undo 
 for Peer-to-Peer Group Editing. Proceedings of the 18th International 
