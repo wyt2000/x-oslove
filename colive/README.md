@@ -21,5 +21,3 @@ This is the README for the extension "colive".
 
 
 ## Release Notes
-
-
