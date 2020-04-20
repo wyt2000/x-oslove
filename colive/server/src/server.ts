@@ -22,6 +22,19 @@ import {
 	TextDocument
 } from 'vscode-languageserver-textdocument';
 
+import * as io from 'socket.io-client';
+
+//lsp连接colive-server
+let socket = io.connect('http://localhost:5000');
+
+socket.on('connect',(socket:any)=>{
+	console.log('Connected!');
+});
+socket.on('message',(msg:string)=>{
+	console.log(msg);
+});
+socket.emit('message','This is the message from client.js to server.py');
+
 // Create a connection for the server. The connection uses Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
 let connection = createConnection(ProposedFeatures.all);
