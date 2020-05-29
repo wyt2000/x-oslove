@@ -20,21 +20,8 @@
 			{
 				"command": "learn.helloWorld",
 				"title": "Hello World"
-			},
-			{
-				"command": "learn.moveBeginningOfBuffer",
-				"title": "move-to-begin"
-			},
-			{
-				"command": "editor.action.clipboardCopyAction",
-				"title": "copy"
 			}
-		],
-		"keybindings":[
-			{
-				"command": "learn.moveBeginningOfBuffer",
-				"key": "alt+c"
-			}
+			
 		]
 	},
 	"scripts": {

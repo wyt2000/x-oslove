@@ -15,7 +15,8 @@ import {
 	CompletionItemKind,
 	TextDocumentPositionParams,
 	TextDocumentSyncKind,
-	InitializeResult
+	InitializeResult,
+	ServerRequestHandler
 } from 'vscode-languageserver';
 
 import {
@@ -23,7 +24,8 @@ import {
 } from 'vscode-languageserver-textdocument';
 
 import * as io from 'socket.io-client';
-
+import { Server } from 'http';
+/*
 //lsp连接colive-server
 let socket = io.connect('http://localhost:5000');
 
@@ -34,7 +36,7 @@ socket.on('message',(msg:string)=>{
 	console.log(msg);
 });
 socket.emit('message','This is the message from client.js to server.py');
-
+*/
 // Create a connection for the server. The connection uses Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
 let connection = createConnection(ProposedFeatures.all);
@@ -93,6 +95,7 @@ connection.onInitialized(() => {
 			connection.console.log('Workspace folder change event received.');
 		});
 	}
+	connection.onRequest('custom/data', param => 'received parameter ' + param);
 });
 
 // The example settings
@@ -118,7 +121,6 @@ connection.onDidChangeConfiguration(change => {
 			(change.settings.languageServerExample || defaultSettings)
 		);
 	}
-
 	// Revalidate all open text documents
 	documents.all().forEach(validateTextDocument);
 });
@@ -149,14 +151,13 @@ documents.onDidChangeContent(change => {
 	validateTextDocument(change.document);
 });
 
+
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	// In this simple example we get the settings for every validate run.
 	let settings = await getDocumentSettings(textDocument.uri);
 
 	// The validator creates diagnostics for all uppercase words length 2 and more
 	let text = textDocument.getText();
-
-	console.log(text);
 
 	let pattern = /\b[A-Z]{2,}\b/g;
 	let m: RegExpExecArray | null;
@@ -194,16 +195,15 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 		}
 		diagnostics.push(diagnostic);
 	}
-
 	// Send the computed diagnostics to VSCode.
 	connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
 }
+
 
 connection.onDidChangeWatchedFiles(_change => {
 	// Monitored files have change in VSCode
 	connection.console.log('We received an file change event');
 });
-
 // This handler provides the initial list of the completion items.
 connection.onCompletion(
 	(_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
