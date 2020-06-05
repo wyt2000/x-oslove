@@ -11,8 +11,9 @@
 	],
 	"activationEvents": [
 		"onCommand:learn.helloWorld",
-		"onCommand:learn.moveBeginningOfBuffer",
-		"onCommand:editor.action.clipboardCopyAction"
+		"onCommand:editor.action.clipboardCopyAction",
+		"onCommand:learn.undo",
+		"onLanguage:plaintext"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -20,8 +21,19 @@
 			{
 				"command": "learn.helloWorld",
 				"title": "Hello World"
+			},
+			{
+				"command": "learn.undo",
+				"title": "undo"
 			}
-			
+		],
+		"keybindings": [
+			{
+				"command": "learn.undo",
+				"key": "ctrl+z",
+				"mac": "cmd",
+				"when": "editorTextFocus"
+			}
 		]
 	},
 	"scripts": {

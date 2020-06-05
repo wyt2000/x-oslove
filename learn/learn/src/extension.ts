@@ -84,7 +84,24 @@ export function activate(context: vscode.ExtensionContext) {
              console.log(change.text); // text replacement
         }
    });
-   
+   let undoDisposable = vscode.commands.registerCommand('learn.undo', () => {
+	let line:number=0;
+	let ch:number=0;
+	if(operateList.length>=1){
+			line=operateList[operateList.length-1].cursorPosition.line;
+			ch=operateList[operateList.length-1].cursorPosition.ch;
+	}
+ let temp:ChangeIncident={
+	 operateType:"undo",
+	 text:"",
+	 from:{line:-1,ch:-1},
+	 to:{line:-1,ch:-1},
+	 cursorPosition:{line:line,ch:ch}
+ };
+ operateList.push(temp);
+ console.log(operateList);
+});
+context.subscriptions.push(undoDisposable);
    
 
 	/* let clipboardCopyDisposable = vscode.commands.registerTextEditorCommand('editor.action.clipboardCopyAction', overriddenClipboardCopyAction); 
