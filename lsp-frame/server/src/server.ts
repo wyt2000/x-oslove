@@ -20,7 +20,9 @@ import {
 	TextDocumentSyncKind,
 	InitializeResult,
 	VersionedTextDocumentIdentifier,
-	WorkspaceEdit
+	WorkspaceEdit,
+	WorkspaceChange,
+	CodeAction
 } from 'vscode-languageserver';
 
 import {
@@ -100,17 +102,33 @@ interface ChangeIncident{
 	to:{line:number,ch:number};
 	cursorPosition:{line:number,ch:number};
 }
-connection.onRequest("custom/data", (param:ChangeIncident )=> {
-	
+
+let currentUri:string;
+
+connection.onRequest('custom/data', (operateList:ChangeIncident[] )=> {	
 	let doc:Automerge.FreezeObject<any>=Automerge.init();
 	doc=Automerge.change(doc,doc=>{
 		doc.text=new Automerge.Text();
 		doc.text.insertAt(0, 'h', 'e', 'l', 'l', 'o');
 		doc.birds=[];
-		doc.birds.push("nihao");
-	})
-	connection.sendRequest("server/data",doc).then(a=>{console.log("send successfully456!")});
-	console.log("here! ")
+		doc.birds.push('nihao');
+	});
+
+	let add: TextEdit = TextEdit.insert({line:0,character:0},'add');
+	let te: TextEdit[]=[];
+	te.push(add);
+	let wse: WorkspaceEdit = {
+		changes: {
+			[currentUri]: te
+		}
+	};
+	connection.workspace.applyEdit(wse).then(()=>{
+		//这里要保证 server 在修改完成后才发送请求
+		connection.sendRequest('server/data', doc).then(a => {
+			console.log('from server send to client successfully!');
+		});
+		te.pop();
+	});
 });
 
 // function editDocument(){
@@ -190,10 +208,14 @@ documents.onDidChangeContent(change => {
 	validateTextDocument(change.document);
 });
 
+
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
+	
+	currentUri = textDocument.uri;
+
 	// In this simple example we get the settings for every validate run.
 	let settings = await getDocumentSettings(textDocument.uri);
-	
+
 	// The validator creates diagnostics for all uppercase words length 2 and more
 	let text = textDocument.getText();
 	let pattern = /\b[A-Z]{2,}\b/g;
