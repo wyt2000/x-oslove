@@ -13,7 +13,10 @@
 	},
 	"dependencies": {
 		"vscode-languageserver": "^6.1.1",
-		"vscode-languageserver-textdocument": "^1.0.1"
+		"vscode-languageserver-textdocument": "^1.0.1",
+		"@types/socket.io-client": "^1.4.33",
+		"socket.io-client": "^2.3.0",
+		"fast-diff": "^1.2.0"
 	},
 	"scripts": {}
 }

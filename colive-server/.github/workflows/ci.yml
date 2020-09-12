@@ -1,0 +1,26 @@
+name: colive-server
+on: [ push, pull_request ]
+jobs:
+  build:
+    name: Build on Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ 3.6, 3.7, 3.8 ]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: x64
+      - name: Cache pip deps
+        id: cache
+        uses: actions/cache@v1
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: ${{ runner.os }}-pip-
+      - name: Install pip deps
+        run: pip3 install -r requirements.txt
+      - name: Test
+        run: python3 -m pytest

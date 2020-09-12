@@ -1,0 +1,7 @@
+DEBUG = True
+SECRET_KEY = 'dev'
+PORT = 8000
+
+DB_URI = 'sqlite:////tmp/colive.sqlite3'
+SQLALCHEMY_DATABASE_URI = DB_URI
+SQLALCHEMY_TRACK_MODIFICATIONS = False

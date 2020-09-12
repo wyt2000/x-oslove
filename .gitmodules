@@ -1,0 +1,6 @@
+[submodule "colive-server"]
+	path = colive-server
+	url = https://github.com/OSH-2020/colive-server
+[submodule "colive-distributed-middleware"]
+	path = colive-distributed-middleware
+	url = https://github.com/OSH-2020/colive-distributed-middleware.git

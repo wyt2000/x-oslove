@@ -1,0 +1,8 @@
+flask
+flask-socketio
+flask-sqlalchemy
+flask-login
+flask-bcrypt
+
+# Test
+pytest
